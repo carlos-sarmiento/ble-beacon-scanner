@@ -1,0 +1,11 @@
+{
+  "minTime": 30,
+  "reportUrl": "https://someurl.com",
+  "beacons": [
+    {
+      "label": "someLabel",
+      "name": "Some Name",
+      "uuid": "iBeacon UUID"
+    }
+  ]
+}
