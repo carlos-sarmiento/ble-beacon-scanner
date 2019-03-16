@@ -21,7 +21,8 @@ for conf in beacons:
 def callback(bt_addr, rssi, packet, additional_info):
     ts = time.time()
     for record in beacons:
-        if record['uuid'] is additional_info['uuid']:
+        if str(record['uuid']) != str(additional_info['uuid']):
+            # print("%s != %s" % (record['uuid'], additional_info['uuid']))
             continue
 
         if ts - record["lastSeen"] < configuration['minTime']:
@@ -31,8 +32,8 @@ def callback(bt_addr, rssi, packet, additional_info):
 
         r = requests.post(configuration['reportUrl'], data=payload)
         record["lastSeen"] = ts
-        print("[%s] <%s> Detected and Reported: '%s'" %
-              (str(datetime.datetime.now()), str(r.status_code), record['label']))
+        print("[%s] <%s> Detected and Reported: '%s' {iBeacon: %s}" %
+              (str(datetime.datetime.now()), str(r.status_code), record['label'], str(additional_info['uuid'])))
 
 
 exit = Event()
