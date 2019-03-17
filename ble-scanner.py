@@ -35,7 +35,12 @@ def callback(bt_addr, rssi, packet, additional_info):
             payload = {'label': record['label'],
                        'name': record['name'], 'rssi': rssi}
 
-            r = requests.post(configuration['reportUrl'], data=payload)
+            try:
+                r = requests.post(configuration['reportUrl'], data=payload)
+            except:
+                print("HTTP Error")
+                continue
+
             record["lastSeen"] = ts
             print("[%s] <%s> Detected and Reported: '%s' {iBeacon: %s} - rssi: %s" %
                   (str(datetime.datetime.now()), str(r.status_code),
