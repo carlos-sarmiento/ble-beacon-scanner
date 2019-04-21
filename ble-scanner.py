@@ -19,40 +19,47 @@ for conf in beacons:
 
 
 def callback(bt_addr, rssi, packet, additional_info):
-    ts = time.time()
-    for record in beacons:
-        if str(record['uuid']) != str(additional_info['uuid']):
-            # print("%s != %s" % (record['uuid'], additional_info['uuid']))
-            continue
+    try:
+        ts = time.time()
+        for record in beacons:
+            if str(record['uuid']) != str(additional_info['uuid']):
+                # print("%s != %s" % (record['uuid'], additional_info['uuid']))
+                continue
 
-        if ts - record["lastSeen"] < configuration['minTime']:
-            continue
+            if ts - record["lastSeen"] < configuration['minTime']:
+                continue
 
-        payload = {'label': record['label'], 'name': record['name']}
+            payload = {'label': record['label'], 'name': record['name']}
 
-        r = requests.post(configuration['reportUrl'], data=payload)
-        record["lastSeen"] = ts
-        print("[%s] <%s> Detected and Reported: '%s' {iBeacon: %s}" %
-              (str(datetime.datetime.now()), str(r.status_code), record['label'], str(additional_info['uuid'])))
+            r = requests.post(configuration['reportUrl'], data=payload)
+            record["lastSeen"] = ts
+            print("[%s] <%s> Detected and Reported: '%s' {iBeacon: %s}" %
+                  (str(datetime.datetime.now()), str(r.status_code),
+                   record['label'], str(additional_info['uuid'])))
+    except:
+        exit.set()
 
 
 exit = Event()
 
 
 def main():
-    print("Starting")
+    try:
+        print("Starting")
 
-    scanner = BeaconScanner(callback)
-    print("Scanning")
+        scanner = BeaconScanner(callback)
+        print("Scanning")
 
-    scanner.start()
+        scanner.start()
 
-    while not exit.is_set():
-        exit.wait(60)
+        while not exit.is_set():
+            exit.wait(60)
 
-    print("All done!")
-    scanner.stop()
-    # perform any cleanup here
+        print("All done!")
+        scanner.stop()
+        # perform any cleanup here
+    except:
+        return
 
 
 def quit(signo, _frame):
@@ -64,6 +71,6 @@ if __name__ == '__main__':
 
     import signal
     for sig in ('TERM', 'HUP', 'INT'):
-        signal.signal(getattr(signal, 'SIG'+sig), quit)
+        signal.signal(getattr(signal, 'SIG' + sig), quit)
 
     main()
