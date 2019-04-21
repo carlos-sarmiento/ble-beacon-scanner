@@ -1,0 +1,13 @@
+version: "2"
+services:
+  ble_beacon_scanner:
+    container_name: ble-beacon-scanner
+    restart: unless-stopped
+    volumes:
+      - "/nas-main-vol/confs/ble-scanner:/config:ro"
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    network_mode: host
+    tty: true
+    image: "ble-beacon-scanner:latest"

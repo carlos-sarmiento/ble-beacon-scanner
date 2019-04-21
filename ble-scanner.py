@@ -21,7 +21,10 @@ for conf in beacons:
 def callback(bt_addr, rssi, packet, additional_info):
     try:
         ts = time.time()
-        for record in beacons:
+        for record in beacons: 
+            if record == None or additional_info == None:
+                continue
+
             if str(record['uuid']) != str(additional_info['uuid']):
                 # print("%s != %s" % (record['uuid'], additional_info['uuid']))
                 continue
@@ -36,7 +39,8 @@ def callback(bt_addr, rssi, packet, additional_info):
             print("[%s] <%s> Detected and Reported: '%s' {iBeacon: %s}" %
                   (str(datetime.datetime.now()), str(r.status_code),
                    record['label'], str(additional_info['uuid'])))
-    except:
+    except Exception as e:
+        print("Exiting due to callback exception" + str(e))
         exit.set()
 
 
