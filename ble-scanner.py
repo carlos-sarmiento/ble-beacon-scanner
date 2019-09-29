@@ -21,7 +21,7 @@ for conf in beacons:
 def callback(bt_addr, rssi, packet, additional_info):
     try:
         ts = time.time()
-        for record in beacons: 
+        for record in beacons:
             if record == None or additional_info == None:
                 continue
 
@@ -32,13 +32,15 @@ def callback(bt_addr, rssi, packet, additional_info):
             if ts - record["lastSeen"] < configuration['minTime']:
                 continue
 
-            payload = {'label': record['label'], 'name': record['name']}
+            payload = {'label': record['label'],
+                       'name': record['name'], 'rssi': rssi}
 
             r = requests.post(configuration['reportUrl'], data=payload)
             record["lastSeen"] = ts
-            print("[%s] <%s> Detected and Reported: '%s' {iBeacon: %s}" %
+            print("[%s] <%s> Detected and Reported: '%s' {iBeacon: %s} - rssi: %s" %
                   (str(datetime.datetime.now()), str(r.status_code),
-                   record['label'], str(additional_info['uuid'])))
+                   record['label'], str(additional_info['uuid']), str(rssi)))
+
     except Exception as e:
         print("Exiting due to callback exception" + str(e))
         exit.set()
